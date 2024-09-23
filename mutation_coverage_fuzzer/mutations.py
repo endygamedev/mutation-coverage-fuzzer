@@ -24,4 +24,12 @@ def insert_random_character(initial: str) -> str:
     if not initial:
         return ""
     random_pos = randint(0, len(initial) - 1)
-    return initial[:random_pos] + choice(ascii_letters) + initial[random_pos + 1 :]
+    return initial[:random_pos] + choice(ascii_letters) + initial[random_pos:]
+
+
+def insert_random_special_character(initial: str) -> str:
+    if not initial:
+        return ""
+    random_pos = randint(0, len(initial) - 1)
+    special_chars = ["-", "+", "*", "/"]
+    return initial[:random_pos] + choice(special_chars) + initial[random_pos:]

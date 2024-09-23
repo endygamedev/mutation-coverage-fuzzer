@@ -25,9 +25,13 @@ class Runner:
 
     def run_coverage(self: Self, *args, **kwargs) -> Any:
         tracer = Trace(trace=False, count=True)
-        result = tracer.runfunc(self.function, *args, **kwargs)
-        self.coverage_tracker(tracer)
-        return result
+        try:
+            result = tracer.runfunc(self.function, *args, **kwargs)
+            return result
+        except Exception as exception:
+            raise Exception from exception
+        finally:
+            self.coverage_tracker(tracer)
 
     def run(self: Self, *args, **kwargs) -> tuple[Any, RunnerResult]:
         try:

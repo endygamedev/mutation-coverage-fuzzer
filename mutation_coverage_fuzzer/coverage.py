@@ -12,21 +12,20 @@ class CoverageTracker:
     ) -> None:
         self.function = function
 
-        self.lines = set()
+        self._lines = set()
         self.covered_lines = set()
 
     def reset(self: Self) -> None:
         self.lines.clear()
         self.covered_lines.clear()
 
-    def __call__(self: Self, trace: Trace) -> None:
-        self.reset()
+    @property
+    def lines(self: Self) -> set[int]:
+        if self._lines:
+            return self._lines
 
         source_lines, starting_line_number = getsourcelines(self.function)
-
-        tracer_results = trace.results()
-        executed_lines = tracer_results.counts
-        module = getfile(self.function)
+        self.source_lines = source_lines
 
         function_declaration_offset = 0
         for index, line in enumerate(source_lines):
@@ -36,8 +35,16 @@ class CoverageTracker:
 
         start = starting_line_number + function_declaration_offset + 1
         end = len(source_lines) + starting_line_number
-        for index in range(start, end):
-            self.lines.add(index)
-            line_executed = executed_lines.get((module, index), 0) > 0
-            if line_executed:
-                self.covered_lines.add(index)
+
+        return set(range(start, end))
+
+    def __call__(self: Self, trace: Trace) -> None:
+        self.reset()
+
+        tracer_results = trace.results()
+        executed_lines = tracer_results.counts
+        module = getfile(self.function)
+
+        for line in self.lines:
+            if (module, line) in executed_lines:
+                self.covered_lines.add(line)
