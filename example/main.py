@@ -7,7 +7,13 @@ from cgi_decoder import cgi_decode
 def main() -> None:
     runner = Runner(cgi_decode)
     seed = {"2%0", "abc+"}
-    fuzzer = MutationalCoverageFuzzer(seed, 2, 5, runner, 100_000)
+    fuzzer = MutationalCoverageFuzzer(
+        seed=seed,
+        min_mutations=2,
+        max_mutations=5,
+        runner=runner,
+        count=100_000,
+    )
     fuzzer.fuzz()
 
 
